@@ -16,12 +16,12 @@ class MySerial(serial.Serial):
         # serial.Serial inherits serial.FileLike
         pass
     else:
-        def readline(self, eol='\r'):
+        def readline(self, eol=b'\r'):
             """
             Overrides io.RawIOBase.readline which cannot handle with '\r' delimiters
             """
             leneol = len(eol)
-            ret = ''
+            ret = b''
             while True:
                 c = self.read(1)
                 if c:
@@ -30,8 +30,7 @@ class MySerial(serial.Serial):
                         break
                 else:
                     break
-
-            return ret
+            return ret.decode()
 
 class GPD3303S(object):
     def __init__(self):
@@ -40,7 +39,7 @@ class GPD3303S(object):
         self.__dataBit = 8
         self.__stopBit = 1
         self.__dataFlowControl = None
-        self.eol = '\r'
+        self.eol = b'\r'
 
     def open(self, port, readTimeOut = 1, writeTimeOut = 1):
         self.serial = MySerial(port         = port,
@@ -68,7 +67,7 @@ class GPD3303S(object):
     def close(self):
         self.serial.close()
 
-    def setDelimiter(self, eol = '\r\n'):
+    def setDelimiter(self, eol = b'\r\n'):
         """
         Must call this method for new-firmware (2.0 or above?) instruments.
         Because the delimiter setting has been changed. 
@@ -249,7 +248,7 @@ class GPD3303S(object):
         """
         STATUS?
         """
-        self.serial.write('STATUS?\n')
+        self.serial.write(b'STATUS?\n')
 
         for i in range(3):
             ret = self.serial.readline(eol=self.eol)
@@ -293,31 +292,27 @@ class GPD3303S(object):
         SAV<NR1>
         """
         self.isValidMemory(memory)
-        self.serial.write('SAV%d\n' % memory)
-
-        err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        self._setValue(b'SAV%d\n' % memory)
         
     def printHelp(self):
         """
         HELP?
         """
-        self.serial.write('HELP?\n')
+        self.serial.write(b'HELP?\n')
         
         for i in range(19):
             ret = self.serial.readline(eol=self.eol)
-            print ret[:-len(self.eol)]
+            print(ret[:-len(self.eol)])
 
         err = self.getError()
         if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+            raise RuntimeError(err)
 
     def getError(self):
         """
         ERR?
         """
-        self.serial.write('ERR?\n')
+        self.serial.write(b'ERR?\n')
         ret = self.serial.readline(eol=self.eol)
         if ret != '':
             return ret[:-len(self.eol)]
