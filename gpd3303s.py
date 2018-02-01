@@ -252,7 +252,7 @@ class GPD3303S(object):
 
         for i in range(3):
             ret = self.serial.readline(eol=self.eol)
-            print ret[:-len(self.eol)]
+            print(ret[:-len(self.eol)])
         
         err = self.getError()
         if err != 'No Error.':
