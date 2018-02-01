@@ -3,7 +3,6 @@ This is an interface module for DC Power Supply GPD-3303S manufactured by Good
 Will Instrument Co., Ltd.
 """
 
-import exceptions
 import serial
 import sys
 
@@ -52,10 +51,10 @@ class GPD3303S(object):
                                timeout      = readTimeOut,
                                writeTimeout = writeTimeOut,
                                dsrdtr       = self.__dataFlowControl)
-        
+
         err = self.getError()
         if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+            raise RuntimeError(err)
 
         # Check if the delimiter is properly set
         # By default, \r is the delimiter, but newer GPD3303S uses \r\n instead.
@@ -82,7 +81,7 @@ class GPD3303S(object):
         are allowed.
         """
         if not (channel == 1 or channel == 2):
-            raise exceptions.RuntimeError('Invalid channel number: %d was given.' % channel)
+            raise RuntimeError('Invalid channel number: %d was given.' % channel)
 
         return True
 
@@ -92,7 +91,7 @@ class GPD3303S(object):
         are allowed.
         """
         if not (memory <= 0 or 4 < memory):
-            raise exceptions.RuntimeError('Invalid memory number: %d was given.' % memory)
+            raise RuntimeError('Invalid memory number: %d was given.' % memory)
 
         return True
 
@@ -102,7 +101,7 @@ class GPD3303S(object):
         significant figures are allowed.
         """
         if value < 0:
-            raise exceptions.RuntimeError('Invalid float value: %f was given.' % value)
+            raise RuntimeError('Invalid float value: %f was given.' % value)
         
         str = "%f" % value
         position = str.find(".")
@@ -258,7 +257,7 @@ class GPD3303S(object):
         
         err = self.getError()
         if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+            raise RuntimeError(err)
 
     def getIdentification(self):
         """
@@ -323,7 +322,7 @@ class GPD3303S(object):
         if ret != '':
             return ret[:-len(self.eol)]
         else:
-            raise exceptions.RuntimeError('Cannot read error message')
+            raise RuntimeError('Cannot read error message')
 
 
 class GPD4303S(GPD3303S):
@@ -334,7 +333,7 @@ class GPD4303S(GPD3303S):
         """
 
         if not (1 <= channel <= 4):
-            raise exceptions.RuntimeError('Invalid channel number: %d was given.' % channel)
+            raise RuntimeError('Invalid channel number: %d was given.' % channel)
         return True
 
 
