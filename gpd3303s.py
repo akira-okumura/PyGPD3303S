@@ -59,9 +59,9 @@ class GPD3303S(object):
 
         # Check if the delimiter is properly set
         # By default, \r is the delimiter, but newer GPD3303S uses \r\n instead.
-        self.serial.setTimeout(0.1)
+        self.serial.timeout = 0.1
         ret = self.serial.read(1)
-        self.serial.setTimeout(readTimeOut)
+        self.serial.timeout = readTimeOut
         
         if ret == '\n':
             self.setDelimiter('\r\n')
