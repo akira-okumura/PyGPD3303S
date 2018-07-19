@@ -4,7 +4,7 @@ description = '''This is an interface module for DC Power Supply GPD-3303S manuf
 Will Instrument Co., Ltd.'''
 
 setup(name='PyGPD3303S',
-      version='1.1.3',
+      version='2.0.0',
       description='Python Interface for DC power supply GPD-3303S',
       author='Akira Okumura',
       author_email='oxon@mac.com',
@@ -14,7 +14,7 @@ setup(name='PyGPD3303S',
       py_modules=['gpd3303s'],
       install_requires=['pyserial'],
       classifiers=['Topic :: Terminals :: Serial',
-                   'Development Status :: 4 - Beta',
+                   'Development Status :: 5 - Production/Stable',
                    'Programming Language :: Python',
                    ],
       long_description=description
