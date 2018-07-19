@@ -3,7 +3,10 @@ This is an interface module for DC Power Supply GPD-3303S manufactured by Good
 Will Instrument Co., Ltd.
 """
 
-import exceptions
+try:
+    from exceptions import RuntimeError, ImportError
+except:
+    pass
 import serial
 import sys
 
@@ -17,12 +20,12 @@ class MySerial(serial.Serial):
         # serial.Serial inherits serial.FileLike
         pass
     else:
-        def readline(self, eol='\r'):
+        def readline(self, eol=b'\r'):
             """
             Overrides io.RawIOBase.readline which cannot handle with '\r' delimiters
             """
             leneol = len(eol)
-            ret = ''
+            ret = b''
             while True:
                 c = self.read(1)
                 if c:
@@ -41,7 +44,7 @@ class GPD3303S(object):
         self.__dataBit = 8
         self.__stopBit = 1
         self.__dataFlowControl = None
-        self.eol = '\r'
+        self.eol = b'\r'
 
     def open(self, port, readTimeOut = 1, writeTimeOut = 1):
         self.serial = MySerial(port         = port,
@@ -54,8 +57,8 @@ class GPD3303S(object):
                                dsrdtr       = self.__dataFlowControl)
         
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
         # Check if the delimiter is properly set
         # By default, \r is the delimiter, but newer GPD3303S uses \r\n instead.
@@ -63,13 +66,13 @@ class GPD3303S(object):
         ret = self.serial.read(1)
         self.setTimeout(readTimeOut)
         
-        if ret == '\n':
-            self.setDelimiter('\r\n')
+        if ret == b'\n':
+            self.setDelimiter(b'\r\n')
     
     def close(self):
         self.serial.close()
 
-    def setDelimiter(self, eol = '\r\n'):
+    def setDelimiter(self, eol = b'\r\n'):
         """
         Must call this method for new-firmware (2.0 or above?) instruments.
         Because the delimiter setting has been changed. 
@@ -91,7 +94,7 @@ class GPD3303S(object):
         are allowed.
         """
         if not (channel == 1 or channel == 2):
-            raise exceptions.RuntimeError('Invalid channel number: %d was given.' % channel)
+            raise RuntimeError('Invalid channel number: %d was given.' % channel)
 
         return True
 
@@ -101,7 +104,7 @@ class GPD3303S(object):
         are allowed.
         """
         if not (memory <= 0 or 4 < memory):
-            raise exceptions.RuntimeError('Invalid memory number: %d was given.' % memory)
+            raise RuntimeError('Invalid memory number: %d was given.' % memory)
 
         return True
 
@@ -111,7 +114,7 @@ class GPD3303S(object):
         significant figures are allowed.
         """
         if value < 0:
-            raise exceptions.RuntimeError('Invalid float value: %f was given.' % value)
+            raise RuntimeError('Invalid float value: %f was given.' % value)
         
         str = "%f" % value
         position = str.find(".")
@@ -132,154 +135,154 @@ class GPD3303S(object):
         ISET<X>:<NR2>
         """
         self.isValidChannel(channel)
-        self.serial.write('ISET%d:%.3f\n' % (channel, current))
+        self.serial.write(b'ISET%d:%.3f\n' % (channel, current))
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
         
     def getCurrent(self, channel):
         """
         ISET<X>?
         """
         self.isValidChannel(channel)
-        self.serial.write('ISET%d?\n' % channel)
+        self.serial.write(b'ISET%d?\n' % channel)
         ret = self.serial.readline(eol=self.eol)
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
-        return float(ret[:-len(self.eol)].replace('A', ''))
+        return float(ret[:-len(self.eol)].replace(b'A', b''))
 
     def setVoltage(self, channel, voltage):
         """
         VSET<X>:<NR2>
         """
         self.isValidChannel(channel)
-        self.serial.write('VSET%d:%.3f\n' % (channel, voltage))
+        self.serial.write(b'VSET%d:%.3f\n' % (channel, voltage))
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
         
     def getVoltage(self, channel):
         """
         VSET<X>?
         """
         self.isValidChannel(channel)
-        self.serial.write('VSET%d?\n' % channel)
+        self.serial.write(b'VSET%d?\n' % channel)
         ret = self.serial.readline(eol=self.eol)
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
-        return float(ret[:-len(self.eol)].replace('V', ''))
+        return float(ret[:-len(self.eol)].replace(b'V', b''))
 
     def getCurrentOutput(self, channel):
         """
         IOUT<X>?
         """
         self.isValidChannel(channel)
-        self.serial.write('IOUT%d?\n' % channel)
+        self.serial.write(b'IOUT%d?\n' % channel)
         ret = self.serial.readline(eol=self.eol)
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
-        return float(ret[:-len(self.eol)].replace('A', ''))
+        return float(ret[:-len(self.eol)].replace(b'A', b''))
 
     def getVoltageOutput(self, channel):
         """
         VOUT<X>?
         """
         self.isValidChannel(channel)
-        self.serial.write('VOUT%d?\n' % channel)
+        self.serial.write(b'VOUT%d?\n' % channel)
         ret = self.serial.readline(eol=self.eol)
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
-        return float(ret[:-len(self.eol)].replace('V', ''))
+        return float(ret[:-len(self.eol)].replace(b'V', b''))
 
     def selectIndependentMode(self):
         """
         TRACK<NR1>
         """
-        self.serial.write('TRACK0\n')
+        self.serial.write(b'TRACK0\n')
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
     def selectTrackingSeriesMode(self):
         """
         TRACK<NR1>
         """
-        self.serial.write('TRACK1\n')
+        self.serial.write(b'TRACK1\n')
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
     def selectTrackingParallelMode(self):
         """
         TRACK<NR1>
         """
-        self.serial.write('TRACK2\n')
+        self.serial.write(b'TRACK2\n')
         
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
     def enableBeep(self, enable = True):
         """
         BEEP<Boolean>
         """
-        self.serial.write('BEEP%d\n' % int(enable))
+        self.serial.write(b'BEEP%d\n' % int(enable))
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
     def enableOutput(self, enable = True):
         """
         OUT<Boolean>
         """
-        self.serial.write('OUT%d\n' % int(enable))
+        self.serial.write(b'OUT%d\n' % int(enable))
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
     def printStatus(self):
         """
         STATUS?
         """
-        self.serial.write('STATUS?\n')
+        self.serial.write(b'STATUS?\n')
 
         for i in range(3):
             ret = self.serial.readline(eol=self.eol)
-            print ret[:-len(self.eol)]
+            print(ret[:-len(self.eol)])
         
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
     def getIdentification(self):
         """
         *IDN?
         """
-        self.serial.write('*IDN?\n')
+        self.serial.write(b'*IDN?\n')
         
         ret = self.serial.readline(eol=self.eol)
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
         return ret[:-len(self.eol)]
 
@@ -288,13 +291,13 @@ class GPD3303S(object):
         RCL<NR1>
         """
         self.isValidMemory(memory)
-        self.serial.write('RCL%d\n' % memory)
+        self.serial.write(b'RCL%d\n' % memory)
         
         ret = self.serial.readline(eol=self.eol)
         
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
         return ret[:-len(self.eol)]
 
@@ -303,36 +306,36 @@ class GPD3303S(object):
         SAV<NR1>
         """
         self.isValidMemory(memory)
-        self.serial.write('SAV%d\n' % memory)
+        self.serial.write(b'SAV%d\n' % memory)
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
         
     def printHelp(self):
         """
         HELP?
         """
-        self.serial.write('HELP?\n')
+        self.serial.write(b'HELP?\n')
         
         for i in range(19):
             ret = self.serial.readline(eol=self.eol)
-            print ret[:-len(self.eol)]
+            print(ret[:-len(self.eol)])
 
         err = self.getError()
-        if err != 'No Error.':
-            raise exceptions.RuntimeError(err)
+        if err != b'No Error.':
+            raise RuntimeError(err)
 
     def getError(self):
         """
         ERR?
         """
-        self.serial.write('ERR?\n')
+        self.serial.write(b'ERR?\n')
         ret = self.serial.readline(eol=self.eol)
-        if ret != '':
+        if ret != b'':
             return ret[:-len(self.eol)]
         else:
-            raise exceptions.RuntimeError('Cannot read error message')
+            raise RuntimeError('Cannot read error message')
 
 
 class GPD4303S(GPD3303S):
@@ -343,7 +346,7 @@ class GPD4303S(GPD3303S):
         """
 
         if not (1 <= channel <= 4):
-            raise exceptions.RuntimeError('Invalid channel number: %d was given.' % channel)
+            raise RuntimeError('Invalid channel number: %d was given.' % channel)
         return True
 
 
