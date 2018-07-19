@@ -59,9 +59,9 @@ class GPD3303S(object):
 
         # Check if the delimiter is properly set
         # By default, \r is the delimiter, but newer GPD3303S uses \r\n instead.
-        self.serial.setTimeout(0.1)
+        self.setTimeout(0.1)
         ret = self.serial.read(1)
-        self.serial.setTimeout(readTimeOut)
+        self.setTimeout(readTimeOut)
         
         if ret == '\n':
             self.setDelimiter('\r\n')
@@ -75,6 +75,15 @@ class GPD3303S(object):
         Because the delimiter setting has been changed. 
         """
         self.eol = eol
+
+    def setTimeout(self, timeout):
+        if hasattr(self.serial, 'setTimeout') and \
+           callable(getattr(self.serial, 'setTimeout')):
+            # pySerial <= v2.7
+            self.serial.setTimeout(timeout)
+        else:
+            # pySerial v3
+            self.serial.timeout = timeout
 
     def isValidChannel(self, channel):
         """
