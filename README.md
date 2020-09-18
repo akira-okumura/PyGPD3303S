@@ -19,6 +19,8 @@ GPD-3303S uses a USB to serial converter chip provided by FTDI. If you have not
 installed its device driver, please download and install it on your machine
 first.
 
+macOS and most Linux distributions support FTDI chips without installing a device driver.
+
 ## Example
 
     >>> import gpd3303s
