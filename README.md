@@ -4,10 +4,22 @@ Python interface for DC power supply GPD-3303S
 ## Requirements
 - PySerial
 
+## Installation
+```
+$ pip install pygpd3303s
+```
+
+If you are using Anaconda, try the command below instead.
+```
+$ pip install -i https://pypi.anaconda.org/oxon/simple pygpd3303s
+```
+
 ## Device Driver
 GPD-3303S uses a USB to serial converter chip provided by FTDI. If you have not
 installed its device driver, please download and install it on your machine
 first.
+
+macOS and most Linux distributions support FTDI chips without installing a device driver.
 
 ## Example
 
