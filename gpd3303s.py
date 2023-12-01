@@ -2,6 +2,12 @@
 This is an interface module for DC Power Supply GPD-3303S manufactured by Good
 Will Instrument Co., Ltd.
 """
+STATUS_ch1mode = int('0x80',16)
+STATUS_ch2mode = int('0x40',16)
+STATUS_track = int('0x30',16)
+STATUS_beep = int('0x08',16)
+STATUS_output = int('0x04',16)
+STATUS_baud = int('0x03',16)
 
 try:
     from exceptions import RuntimeError, ImportError
@@ -258,19 +264,25 @@ class GPD3303S(object):
         if err != b'No Error.':
             raise RuntimeError(err)
 
-    def printStatus(self):
+    def getStatus(self):
         """
         STATUS?
         """
         self.serial.write(b'STATUS?\n')
 
-        for i in range(3):
-            ret = self.serial.readline(eol=self.eol)
-            print(ret[:-len(self.eol)])
-        
+        ret = self.serial.readline(eol=self.eol)
+    
         err = self.getError()
         if err != b'No Error.':
             raise RuntimeError(err)
+
+        return ret[:-len(self.eol)]
+        
+    def isOutputOn(self):
+        if int(self.getStatus(),2) & STATUS_output != 0:
+            return True
+        else:
+            return False
 
     def getIdentification(self):
         """
